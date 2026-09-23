@@ -144,6 +144,60 @@ namespace WebAPI_BookManagement.Controllers
             return Ok(); //Trả về HTTP 200
         }
 
+        [HttpPut("update-book-by-id/{id:int}")]
+        public IActionResult UpdateBookById(int id, [FromBody] addBookRequestDTO addBookRequestDTO)
+        {
+            var bookDomain = _dbContext.Books.FirstOrDefault(x => x.Id == id); //Tìm sách theo ID
+
+            if (bookDomain != null) //Cập nhật thông tin sách
+            {
+                bookDomain.Title = addBookRequestDTO.Title;
+                bookDomain.Description = addBookRequestDTO.Description;
+                bookDomain.IsRead = addBookRequestDTO.IsRead;
+                bookDomain.DateRead = addBookRequestDTO.DateRead;
+                bookDomain.Rate = addBookRequestDTO.Rate;
+                bookDomain.Genre = addBookRequestDTO.Genre;
+                bookDomain.CoverUrl = addBookRequestDTO.CoverUrl;
+                bookDomain.DateAdded = addBookRequestDTO.DateAdded;
+                bookDomain.PublisherID = addBookRequestDTO.PublisherID;
+
+                _dbContext.SaveChanges();
+            }
+
+            var existingBookAuthors = _dbContext.Books_Authors
+                .Where(x => x.BookId == id)
+                .ToList();
+
+            if (existingBookAuthors != null && existingBookAuthors.Count > 0)
+            {
+                _dbContext.Books_Authors.RemoveRange(existingBookAuthors); //Xóa danh sách tác giả cũ
+                _dbContext.SaveChanges();
+            }
+
+            foreach (var authorId in addBookRequestDTO.AuthorIds) //Thêm danh sách tác giả mới
+            {
+                var authorDomain = _dbContext.Authors
+                    .FirstOrDefault(x => x.Id == authorId);
+
+                if (authorDomain == null)
+                {
+                    return NotFound();
+                }
+
+                var bookAuthorDomain = new Models.Domain.Book_Author()
+                {
+                    BookId = bookDomain.Id,
+                    AuthorId = authorDomain.Id
+                };
+
+                _dbContext.Books_Authors.Add(bookAuthorDomain);
+                _dbContext.SaveChanges();
+            }
+
+            return Ok(addBookRequestDTO); //Trả kết quả
+        }
+
+
         // Viet cac action Post, Get, Update, Delete
     }
 }
