@@ -1,26 +1,29 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
+
 namespace WebAPI_BookManagement.Models.DTO
 {
     public class addBookRequestDTO
     {
-        public string Title { get; set; } //Tên sách
+        [Required]
+        [MinLength(10)]
+        public string Title { get; set; }
 
-        public string Description { get; set; } //Mô tả sách
+        public string Description { get; set; }
 
-        public bool IsRead { get; set; } //Đã đọc hay chưa
+        public bool IsRead { get; set; }
 
-        public DateTime? DateRead { get; set; } //Ngày đọc
+        public DateTime? DateRead { get; set; }
 
-        public int? Rate { get; set; } //Điểm đánh giá
+        public int? Rate { get; set; }
 
-        public string Genre { get; set; } //Thể loại
+        public string Genre { get; set; }
 
-        public string CoverUrl { get; set; } //Đường dẫn ảnh bìa
+        public string CoverUrl { get; set; }
 
-        public DateTime DateAdded { get; set; } //Ngày thêm sách
+        public DateTime DateAdded { get; set; }
 
-        public int PublisherID { get; set; } //ID nhà xuất bản
+        public int PublisherID { get; set; }
 
-        public List<int> AuthorIds { get; set; } //Danh sách ID tác giả
+        public List<int> AuthorIds { get; set; }
     }
 }
